@@ -12,3 +12,14 @@ A proof-of-concept crypto index running on the [Solana blockchain](https://solan
 
 ## Running a Solana Dev Cluster
 Follow [the instructions on the Solana GitHub](https://github.com/solana-labs/example-helloworld#configure-cli) to set up a keypair and start a cluster. 
+
+## Development
+Run formatting on rust files:
+```sh
+cargo fmt --all
+```
+
+Run clippy (bug checker) on rust files:
+```sh
+cargo clippy --no-deps --fix
+```
