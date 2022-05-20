@@ -9,7 +9,7 @@ use chrono::prelude::DateTime;
 use chrono::Utc;
 use std::time::{Duration, UNIX_EPOCH};
 
-fn read_price(key: &String, url: &String) -> f64 {
+fn read_price(key: &str, url: &str) -> f64 {
     let clnt = RpcClient::new(url.to_string());
     let price_key = Pubkey::from_str(key).unwrap();
 
