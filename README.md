@@ -21,10 +21,8 @@ Used for the program client and testing.
 - [Install Anchor CLI](https://project-serum.github.io/anchor/getting-started/installation.html)
 - Install dependencies: `yarn install`.
 
-## Running a Solana Dev Cluster
-Follow [the instructions on the Solana GitHub](https://github.com/solana-labs/example-helloworld#configure-cli) to set up a keypair and start a cluster. 
-
 ## Development
+### Rust
 Run formatting on rust files:
 ```sh
 cargo fmt --all
@@ -33,4 +31,16 @@ cargo fmt --all
 Run clippy (bug checker) on rust files:
 ```sh
 cargo clippy --no-deps --fix
+```
+
+### Solana
+Start a local cluster (will run until terminal exits with ctrl-c):
+```sh
+solana-test-validator
+```
+
+Build and deploy the program (in a new terminal):
+```sh
+anchor build
+anchor deploy
 ```
