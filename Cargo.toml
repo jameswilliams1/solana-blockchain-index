@@ -8,15 +8,15 @@ version = "0.1.0"
 [dependencies]
 borsh = "0.9.3"
 borsh-derive = "0.9.3"
-solana-program = "1.10.13"
-pyth-sdk-solana = "0.4.0"
-solana-client = "1.8.1"
-num-traits = "0.2.15"
 chrono = "0.4.19"
+num-traits = "0.2.15"
+pyth-sdk-solana = "0.4.1"
+solana-client = "1.10.17"
+solana-program = "1.10.17"
 
 [dev-dependencies]
-solana-program-test = "1.10.13"
-solana-sdk = "1.10.13"
+solana-program-test = "1.10.17"
+solana-sdk = "1.10.17"
 
 [lib]
 crate-type = ["cdylib", "lib"]
