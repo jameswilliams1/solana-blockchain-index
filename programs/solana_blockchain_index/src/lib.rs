@@ -31,6 +31,11 @@ pub mod solana_blockchain_index {
         // TODO get value from pyth here
         index_value.value = 0.0;
 
+        msg!(
+            "Index value at {} is {}",
+            index_value.timestamp,
+            index_value.value
+        );
         Ok(())
     }
 }
