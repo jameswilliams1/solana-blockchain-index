@@ -1,23 +1,26 @@
 [package]
-edition = "2021"
-name = "solana_blockchain_index"
-version = "0.1.0"
+name = "test-contract"
+version = "0.2.2"
+edition = "2018"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[features]
+test-bpf = []
+no-entrypoint = []
 
 [dependencies]
-borsh = "0.9.3"
-borsh-derive = "0.9.3"
-solana-program = "1.10.13"
-pyth-sdk-solana = "0.4.0"
-solana-client = "1.8.1"
-num-traits = "0.2.15"
-chrono = "0.4.19"
+pyth-sdk-solana = { path = "../", version = "0.4.0" }
+solana-program = "1.8.1"
+bytemuck = "1.7.2"
+borsh = "0.9"
+borsh-derive = "0.9.0"
 
 [dev-dependencies]
-solana-program-test = "1.10.13"
-solana-sdk = "1.10.13"
+solana-program-test = "1.8.1"
+solana-client = "1.8.1"
+solana-sdk = "1.8.1"
 
 [lib]
 crate-type = ["cdylib", "lib"]
-name = "lib_solana_blockchain_index"
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
