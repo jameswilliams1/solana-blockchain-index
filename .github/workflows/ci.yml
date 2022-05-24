@@ -1,22 +1,25 @@
 ---
-on: [pull_request]
 name: CI
+on:
+  pull_request:
+  push:
+    branches: [master]
+
+env:
+  CARGO_TERM_COLOR: always
 
 jobs:
   ci:
     runs-on: ubuntu-latest
+    container: projectserum/build:v0.24.2
     steps:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Install Rust stable toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: stable
-          override: true
-          components: rustfmt, clippy
+      - name: Set default rust toolchain
+        run: rustup default stable
 
+      # unit tests
       - name: Cache Rust crates
         uses: Swatinem/rust-cache@v1
 
@@ -41,3 +44,22 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: test
+
+      # integration tests
+      - name: Generate new keypair
+        run: solana-keygen new
+
+      - name: Set solana target cluster to local
+        run: solana config set --url http:localhost:8899
+
+      - name: Check solana config
+        run: solana config get
+
+      - name: Install yarn dependencies
+        run: yarn install
+
+      - name: Build
+        run: anchor build
+
+      - name: Run integration tests
+        run: anchor test
