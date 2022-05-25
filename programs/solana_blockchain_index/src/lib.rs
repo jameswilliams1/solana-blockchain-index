@@ -13,10 +13,10 @@ const CONF_LENGTH: usize = 8;
 #[account]
 #[derive(Debug)]
 pub struct IndexValue {
-    pub price: i64,
-    pub expo: i32,
-    pub conf: u64,
-    pub time: i64,
+    pub price: i64, // integer price
+    pub expo: i32,  // exponent (decimal_price = price x 10^expo)
+    pub conf: u64,  // confidence (+-)
+    pub time: i64,  // unix timestamp
 }
 
 impl IndexValue {

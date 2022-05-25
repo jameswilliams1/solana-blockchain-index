@@ -23,6 +23,7 @@ pub fn calculate_index_value(prices: Vec<Price>) -> Price {
     }
 
     let price = sum_price / prices.len() as i64;
+    // NB conf = square of summed variances for each price
     let conf = ((variance as f64).sqrt() / (prices.len() as f64)).round() as u64;
     let index_value = Price { price, expo, conf };
     index_value
