@@ -16,8 +16,6 @@ no-log-ix-name = []
 
 [dependencies]
 anchor-lang = "0.24.2"
-# chrono = "0.4.19"
 pyth-sdk-solana = "0.4.1"
-# solana-client = "1.9.22"
 
 [dev-dependencies]
