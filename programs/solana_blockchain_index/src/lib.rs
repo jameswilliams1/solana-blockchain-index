@@ -1,27 +1,28 @@
 use anchor_lang::prelude::*;
+mod index_service;
 mod pyth_service;
 
 declare_id!("4NRxSxxnNA9xKHKrmj9RD16pmGRTDMvp3SkY4uB7ifdM");
 
 const DISCRIMINATOR_LENGTH: usize = 8;
-const TIMESTAMP_LENGTH: usize = 8;
-const VALUE_LENGTH: usize = 8;
+const TIME_LENGTH: usize = 8;
+const PRICE_LENGTH: usize = 8;
 const EXPO_LENGTH: usize = 4;
 const CONF_LENGTH: usize = 8;
 
 #[account]
 #[derive(Debug)]
 pub struct IndexValue {
-    pub timestamp: i64,
-    pub value: i64,
+    pub price: i64,
     pub expo: i32,
     pub conf: u64,
+    pub time: i64,
 }
 
 impl IndexValue {
     const LEN: usize = DISCRIMINATOR_LENGTH // added by Solana
-        + TIMESTAMP_LENGTH // timestamp
-        + VALUE_LENGTH // value
+        + TIME_LENGTH // timestamp
+        + PRICE_LENGTH // price
         + EXPO_LENGTH // exponent
         + CONF_LENGTH; // confidence
 }
@@ -34,11 +35,17 @@ pub mod solana_blockchain_index {
         let index_value: &mut Account<IndexValue> = &mut ctx.accounts.index_value;
         let clock: Clock = Clock::get().unwrap();
 
-        index_value.timestamp = clock.unix_timestamp;
-        let btc_value = pyth_service::price_of_account(&ctx.accounts.btc_account);
-        index_value.value = btc_value.price;
-        index_value.conf = btc_value.conf;
-        index_value.expo = btc_value.expo;
+        let price_accounts = vec![&ctx.accounts.btc_account, &ctx.accounts.eth_account];
+        let prices: Vec<_> = price_accounts
+            .iter()
+            .map(|pa| pyth_service::price_of_account(pa))
+            .collect();
+        let index_calculation = index_service::calculate_index_value(prices);
+
+        index_value.price = index_calculation.price;
+        index_value.expo = index_calculation.expo;
+        index_value.conf = index_calculation.conf;
+        index_value.time = clock.unix_timestamp;
 
         msg!("New index value: {:?}", index_value);
         Ok(())
@@ -54,4 +61,6 @@ pub struct UpdateIndexValue<'info> {
     pub system_program: Program<'info, System>,
     /// CHECK should be validated at read time
     pub btc_account: AccountInfo<'info>,
+    /// CHECK should be validated at read time
+    pub eth_account: AccountInfo<'info>,
 }
