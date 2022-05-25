@@ -21,6 +21,7 @@ describe("SolanaBlockchainIndex", () => {
         user: programProvider.wallet.publicKey,
         systemProgram: anchor.web3.SystemProgram.programId,
         btcAccount: "GVXRSBjFk6e6J3NbVPXohDJetcTjaeeuykUpbQF8UoMU",
+        ethAccount: "JBu1AL4obBcCMqKBBxhpWCNUt136ijcuMZLFvTP7iWdB",
       })
       .signers([keypair])
       .rpc();
@@ -31,9 +32,9 @@ describe("SolanaBlockchainIndex", () => {
       keypair.publicKey
     );
     console.log(indexValue);
-    expect(indexValue.timestamp).is.instanceOf(anchor.BN);
-    expect(indexValue.value.toNumber()).to.equal(2938900000000);
-    expect(indexValue.conf.toNumber()).to.equal(1021038607);
+    expect(indexValue.time).is.instanceOf(anchor.BN);
+    expect(indexValue.price.toNumber()).to.equal(1567878500000);
+    expect(indexValue.conf.toNumber()).to.equal(512203289);
     expect(indexValue.expo).to.equal(-8);
   });
 });

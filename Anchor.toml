@@ -20,3 +20,7 @@ url = "mainnet-beta" # url of the cluster that accounts are cloned from
 [[test.validator.account]]
 address = "GVXRSBjFk6e6J3NbVPXohDJetcTjaeeuykUpbQF8UoMU"
 filename = "tests/btc_price_account.json"
+
+[[test.validator.account]]
+address = "JBu1AL4obBcCMqKBBxhpWCNUt136ijcuMZLFvTP7iWdB"
+filename = "tests/eth_price_account.json"
