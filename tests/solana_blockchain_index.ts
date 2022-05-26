@@ -13,6 +13,9 @@ describe("SolanaBlockchainIndex", () => {
 
   it("Writes calculated index value and timestamp to account", async () => {
     const keypair = anchor.web3.Keypair.generate();
+    console.log(
+      `Requesting index calculation for new account: ${keypair.publicKey} owned by user ${programProvider.wallet.publicKey}`
+    );
     // set off new index calculation
     const tx = await program.methods
       .updateIndexValue()
@@ -25,13 +28,16 @@ describe("SolanaBlockchainIndex", () => {
       })
       .signers([keypair])
       .rpc();
-    console.log("Transaction signature", tx);
+    console.log(`Calculation finished. Transaction signature: ${tx}`);
 
     // verify result
+    console.log(`Fetching account: ${keypair.publicKey}`);
     const indexValue = await program.account.indexValue.fetch(
       keypair.publicKey
     );
-    console.log(indexValue);
+    console.log(
+      `Account contents:\n\tprice: ${indexValue.price}\n\texpo: ${indexValue.expo}\n\tconf: ${indexValue.conf}\n\ttime: ${indexValue.time}`
+    );
     expect(indexValue.time).is.instanceOf(anchor.BN);
     expect(indexValue.price.toNumber()).to.equal(1567878500000);
     expect(indexValue.conf.toNumber()).to.equal(512203289);
