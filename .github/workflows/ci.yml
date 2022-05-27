@@ -7,22 +7,28 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: "1"
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    container: projectserum/build:v0.24.2
     steps:
-      - name: Install Git
-        run: >-
-          apt-get install -y software-properties-common && add-apt-repository
-          ppa:git-core/ppa && apt-get update && apt-get install -y git
-
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - name: Set default rust toolchain
-        run: rustup default stable
+      - name: Setup Rust stable toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+          components: rustfmt, clippy
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: .nvmrc
+          cache: yarn
 
       # unit tests
       - name: Cache Rust crates
@@ -51,6 +57,14 @@ jobs:
           command: test
 
       # integration tests & versioning
+      - name: Install Solana
+        run: |
+          sh -c "$(curl -sSfL https://release.solana.com/stable/install)"
+          echo ~/.local/share/solana/install/active_release/bin >> $GITHUB_PATH
+
+      - name: Install Anchor
+        run: npm i -g @project-serum/anchor-cli
+
       - name: Generate new keypair
         run: solana-keygen new
 
@@ -61,7 +75,7 @@ jobs:
         run: solana config get
 
       - name: Install yarn dependencies
-        run: yarn install
+        run: yarn install --frozen-lockfile
 
       - name: Install cargo versioning tools
         run: cargo install cargo-bump cargo-get
@@ -79,19 +93,18 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: solana-blockchain-index-programs
-          path: "target/deploy/*.so"
+          path: target/deploy/*.so
           if-no-files-found: error
 
       - name: Upload Solana IDLs
         uses: actions/upload-artifact@v3
         with:
           name: solana-blockchain-index-idls
-          path: "target/idl/*.json"
+          path: target/idl/*.json
           if-no-files-found: error
 
       - name: Push new package version
-        # TODO
-        # if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: |
           tag="$(cd programs/solana_blockchain_index && cargo get version)"
           git config --global user.name '${{ github.actor }}'
@@ -109,7 +122,7 @@ jobs:
     environment: devnet
     container: projectserum/build:v0.24.2
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
