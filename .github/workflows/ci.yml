@@ -9,10 +9,15 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
     container: projectserum/build:v0.24.2
     steps:
+      - name: Install Git
+        run: >-
+          apt-get install -y software-properties-common && add-apt-repository
+          ppa:git-core/ppa && apt-get update && apt-get install -y git
+
       - name: Checkout
         uses: actions/checkout@v2
 
@@ -45,7 +50,7 @@ jobs:
         with:
           command: test
 
-      # integration tests
+      # integration tests & versioning
       - name: Generate new keypair
         run: solana-keygen new
 
@@ -57,6 +62,12 @@ jobs:
 
       - name: Install yarn dependencies
         run: yarn install
+
+      - name: Install cargo versioning tools
+        run: cargo install cargo-bump cargo-get
+
+      - name: Update release version
+        run: cargo bump minor
 
       - name: Build
         run: anchor build
@@ -78,9 +89,22 @@ jobs:
           path: "target/idl/*.json"
           if-no-files-found: error
 
+      - name: Push new package version
+        # TODO
+        # if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: |
+          tag="$(cd programs/solana_blockchain_index && cargo get version)"
+          git config --global user.name '${{ github.actor }}'
+          git config --global user.email '${{ github.actor }}@users.noreply.github.com'
+          git add programs/solana_blockchain_index/Cargo.toml
+          git commit -am "Bump version to $tag"
+          git tag "$tag"
+          git push
+          git push origin "$tag"
+
   deploy:
-    # if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    needs: build
     runs-on: ubuntu-latest
     environment: devnet
     container: projectserum/build:v0.24.2
@@ -112,7 +136,7 @@ jobs:
           ./target/deploy/solana_blockchain_index-keypair.json
 
       - name: Airdrop SOL for deployment
-        run: solana airdrop 2
+        run: solana airdrop --url devnet 2
 
       - name: Deploy IDL to devnet
         run: >-
