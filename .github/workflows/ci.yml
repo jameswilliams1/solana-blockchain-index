@@ -9,7 +9,7 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  ci:
+  test:
     runs-on: ubuntu-latest
     container: projectserum/build:v0.24.2
     steps:
@@ -63,3 +63,65 @@ jobs:
 
       - name: Run integration tests
         run: anchor test
+
+      - name: Upload Solana programs
+        uses: actions/upload-artifact@v3
+        with:
+          name: solana-blockchain-index-programs
+          path: "target/deploy/*.so"
+          if-no-files-found: error
+
+      - name: Upload Solana IDLs
+        uses: actions/upload-artifact@v3
+        with:
+          name: solana-blockchain-index-idls
+          path: "target/idl/*.json"
+          if-no-files-found: error
+
+  deploy:
+    # if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    needs: test
+    runs-on: ubuntu-latest
+    environment: devnet
+    container: projectserum/build:v0.24.2
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Download Solana programs
+        uses: actions/download-artifact@v3
+        with:
+          name: solana-blockchain-index-programs
+          path: target/deploy
+
+      - name: Download Solana IDLs
+        uses: actions/download-artifact@v3
+        with:
+          name: solana-blockchain-index-idls
+          path: target/idl
+
+      - name: Setup solana wallet
+        run: >-
+          mkdir -p ~/.config/solana && echo ${{ secrets.PROGRAM_UPGRADE_AUTHORITY_JSON
+          }} > ~/.config/solana/id.json
+
+      - name: Setup program keypair
+        run: >-
+          mkdir -p ./target/deploy && echo ${{ secrets.PROGRAM_KEYPAIR_JSON }} >
+          ./target/deploy/solana_blockchain_index-keypair.json
+
+      - name: Airdrop SOL for deployment
+        run: solana airdrop 2
+
+      - name: Deploy IDL to devnet
+        run: >-
+          anchor --provider.cluster devnet idl upgrade -f
+          target/idl/solana_blockchain_index.json
+          7kARzULggbgDSLLpBgERNHQSpkse1qM3RB4NEEvS3ztu
+
+      - name: Deploy program to devnet
+        run: >-
+          anchor --provider.cluster devnet upgrade
+          target/deploy/solana_blockchain_index.so --program-id
+          7kARzULggbgDSLLpBgERNHQSpkse1qM3RB4NEEvS3ztu
