@@ -12,6 +12,10 @@
     ],
     "module": "commonjs",
     "target": "es6",
-    "esModuleInterop": true
-  }
+    "esModuleInterop": true,
+    "outDir": "build"
+  },
+  "include": [
+    "app/src/**/*"
+  ]
 }
