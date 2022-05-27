@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 use pyth_sdk_solana::{load_price_feed_from_account_info, Price, PriceFeed};
 
-pub fn price_of_account<'a>(price_account_info: &'a AccountInfo) -> Price {
+pub fn price_of_account(price_account_info: &AccountInfo) -> Price {
     let price_feed: PriceFeed = load_price_feed_from_account_info(price_account_info).unwrap();
     let current_price: Price = price_feed.get_current_price().unwrap();
 

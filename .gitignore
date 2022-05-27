@@ -19,3 +19,6 @@ target
 **/*.rs.bk
 node_modules
 test-ledger
+# auto generated IDL
+app/src/idl/
+build/

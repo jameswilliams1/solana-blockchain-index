@@ -2,7 +2,10 @@
 seeds = false
 
 [programs.localnet]
-solana_blockchain_index = "4NRxSxxnNA9xKHKrmj9RD16pmGRTDMvp3SkY4uB7ifdM"
+solana_blockchain_index = "7kARzULggbgDSLLpBgERNHQSpkse1qM3RB4NEEvS3ztu"
+
+[programs.devnet]
+solana_blockchain_index = "7kARzULggbgDSLLpBgERNHQSpkse1qM3RB4NEEvS3ztu"
 
 [registry]
 url = "https://anchor.projectserum.com"
@@ -24,3 +27,6 @@ filename = "tests/btc_price_account.json"
 [[test.validator.account]]
 address = "JBu1AL4obBcCMqKBBxhpWCNUt136ijcuMZLFvTP7iWdB"
 filename = "tests/eth_price_account.json"
+
+[workspace]
+types = "app/src/idl/"

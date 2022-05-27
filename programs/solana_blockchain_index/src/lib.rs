@@ -2,7 +2,7 @@ use anchor_lang::prelude::*;
 mod index_service;
 mod pyth_service;
 
-declare_id!("4NRxSxxnNA9xKHKrmj9RD16pmGRTDMvp3SkY4uB7ifdM");
+declare_id!("7kARzULggbgDSLLpBgERNHQSpkse1qM3RB4NEEvS3ztu");
 
 const DISCRIMINATOR_LENGTH: usize = 8;
 const TIME_LENGTH: usize = 8;
@@ -13,10 +13,10 @@ const CONF_LENGTH: usize = 8;
 #[account]
 #[derive(Debug)]
 pub struct IndexValue {
-    pub price: i64,
-    pub expo: i32,
-    pub conf: u64,
-    pub time: i64,
+    pub price: i64, // integer price
+    pub expo: i32,  // exponent (decimal_price = price x 10^expo)
+    pub conf: u64,  // confidence (+-)
+    pub time: i64,  // unix timestamp
 }
 
 impl IndexValue {
