@@ -126,8 +126,6 @@ jobs:
     container: projectserum/build:v0.24.2
     steps:
       - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
 
       - name: Download Solana programs
         uses: actions/download-artifact@v3
