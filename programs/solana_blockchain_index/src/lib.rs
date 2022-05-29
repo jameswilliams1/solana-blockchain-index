@@ -35,7 +35,19 @@ pub mod solana_blockchain_index {
         let index_value: &mut Account<IndexValue> = &mut ctx.accounts.index_value;
         let clock: Clock = Clock::get().unwrap();
 
-        let price_accounts = vec![&ctx.accounts.btc_account, &ctx.accounts.eth_account];
+        let price_accounts = vec![
+            &ctx.accounts.ada_account,
+            &ctx.accounts.avax_account,
+            &ctx.accounts.bch_account,
+            &ctx.accounts.bnb_account,
+            &ctx.accounts.btc_account,
+            &ctx.accounts.doge_account,
+            &ctx.accounts.dot_account,
+            &ctx.accounts.eth_account,
+            &ctx.accounts.ltc_account,
+            &ctx.accounts.sol_account,
+        ];
+
         let prices: Vec<_> = price_accounts
             .iter()
             .map(|pa| pyth_service::price_of_account(pa))
@@ -60,7 +72,23 @@ pub struct UpdateIndexValue<'info> {
     pub user: Signer<'info>,
     pub system_program: Program<'info, System>,
     /// CHECK should be validated at read time
+    pub ada_account: AccountInfo<'info>,
+    /// CHECK should be validated at read time
+    pub avax_account: AccountInfo<'info>,
+    /// CHECK should be validated at read time
+    pub bch_account: AccountInfo<'info>,
+    /// CHECK should be validated at read time
+    pub bnb_account: AccountInfo<'info>,
+    /// CHECK should be validated at read time
     pub btc_account: AccountInfo<'info>,
     /// CHECK should be validated at read time
+    pub doge_account: AccountInfo<'info>,
+    /// CHECK should be validated at read time
+    pub dot_account: AccountInfo<'info>,
+    /// CHECK should be validated at read time
     pub eth_account: AccountInfo<'info>,
+    /// CHECK should be validated at read time
+    pub ltc_account: AccountInfo<'info>,
+    /// CHECK should be validated at read time
+    pub sol_account: AccountInfo<'info>,
 }

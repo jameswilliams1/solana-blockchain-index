@@ -23,8 +23,16 @@ describe("SolanaBlockchainIndex", () => {
         indexValue: keypair.publicKey,
         user: programProvider.wallet.publicKey,
         systemProgram: anchor.web3.SystemProgram.programId,
+        adaAccount: "3pyn4svBbxJ9Wnn3RVeafyLWfzie6yC5eTig2S62v9SC",
+        avaxAccount: "Ax9ujW5B9oqcv59N8m6f1BpTBq2rGeGaBcpKjC5UYsXU",
+        bchAccount: "5ALDzwcRJfSyGdGyhP3kP628aqBNHZzLuVww7o9kdspe",
+        bnbAccount: "4CkQJBxhU8EZ2UjhigbtdaPbpTe6mqf811fipYBFbSYN",
         btcAccount: "GVXRSBjFk6e6J3NbVPXohDJetcTjaeeuykUpbQF8UoMU",
+        dogeAccount: "FsSM3s38PX9K7Dn6eGzuE29S2Dsk1Sss1baytTQdCaQj",
+        dotAccount: "EcV1X1gY2yb4KXxjVQtTHTbioum2gvmPnFk4zYAt7zne",
         ethAccount: "JBu1AL4obBcCMqKBBxhpWCNUt136ijcuMZLFvTP7iWdB",
+        ltcAccount: "8RMnV1eD55iqUFJLMguPkYBkq8DCtx81XcmAja93LvRR",
+        solAccount: "H6ARHf6YXhGYeQfUzQNGk6rDNnLBQKrenN712K4AQJEG",
       })
       .signers([keypair])
       .rpc();
