@@ -49,5 +49,13 @@ filename = "tests/dot_price_account.json"
 address = "JBu1AL4obBcCMqKBBxhpWCNUt136ijcuMZLFvTP7iWdB"
 filename = "tests/eth_price_account.json"
 
+[[test.validator.account]]
+address = "8RMnV1eD55iqUFJLMguPkYBkq8DCtx81XcmAja93LvRR"
+filename = "tests/ltc_price_account.json"
+
+[[test.validator.account]]
+address = "H6ARHf6YXhGYeQfUzQNGk6rDNnLBQKrenN712K4AQJEG"
+filename = "tests/sol_price_account.json"
+
 [workspace]
 types = "app/src/idl/"
