@@ -22,23 +22,23 @@ url = "mainnet-beta" # url of the cluster that accounts are cloned from
 
 [[test.validator.account]]
 address = "4CkQJBxhU8EZ2UjhigbtdaPbpTe6mqf811fipYBFbSYN"
-filename = "tests/bnb_price_account.json"
+filename = "tests/data/bnb_price_account.json"
 
 [[test.validator.account]]
 address = "GVXRSBjFk6e6J3NbVPXohDJetcTjaeeuykUpbQF8UoMU"
-filename = "tests/btc_price_account.json"
+filename = "tests/data/btc_price_account.json"
 
 [[test.validator.account]]
 address = "JBu1AL4obBcCMqKBBxhpWCNUt136ijcuMZLFvTP7iWdB"
-filename = "tests/eth_price_account.json"
+filename = "tests/data/eth_price_account.json"
 
 [[test.validator.account]]
 address = "FsSM3s38PX9K7Dn6eGzuE29S2Dsk1Sss1baytTQdCaQj"
-filename = "tests/doge_price_account.json"
+filename = "tests/data/doge_price_account.json"
 
 [[test.validator.account]]
 address = "8RMnV1eD55iqUFJLMguPkYBkq8DCtx81XcmAja93LvRR"
-filename = "tests/ltc_price_account.json"
+filename = "tests/data/ltc_price_account.json"
 
 [workspace]
 types = "app/src/idl/"
