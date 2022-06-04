@@ -1,5 +1,13 @@
 # Solana Blockchain Index
-A proof-of-concept crypto index running on the [Solana blockchain](https://solana.com/) using [the Pyth Network](https://pyth.network/) for market data.
+A proof-of-concept crypto index and investment contract running on the [Solana blockchain](https://solana.com/) using [the Pyth Network](https://pyth.network/) for market data.
+
+# Overview
+## index-investment program
+- Uses a system-wide PDA to store admin config (initialised by the first user) including SOL payment wallet address.
+- Only the initialising user can update payment/other admin details for the life of the program.
+
+## solana-blockchain-index program
+- Uses the provided Pyth network public keys to read data from price accounts, writing to a PDA owned by the requesting user. The same PDA is used to update the value for each re-run.
 
 # Developer Setup
 ## First Time Setup
