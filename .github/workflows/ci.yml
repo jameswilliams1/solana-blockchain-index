@@ -156,10 +156,10 @@ jobs:
         run: >-
           anchor --provider.cluster devnet idl upgrade -f
           target/idl/solana_blockchain_index.json
-          7kARzULggbgDSLLpBgERNHQSpkse1qM3RB4NEEvS3ztu
+          56yNRQWKqpJdPSMDum7TCr7evVLt1uzXZkrarBZowyXz
 
       - name: Deploy program to devnet
         run: >-
           anchor --provider.cluster devnet upgrade
           target/deploy/solana_blockchain_index.so --program-id
-          7kARzULggbgDSLLpBgERNHQSpkse1qM3RB4NEEvS3ztu
+          56yNRQWKqpJdPSMDum7TCr7evVLt1uzXZkrarBZowyXz
