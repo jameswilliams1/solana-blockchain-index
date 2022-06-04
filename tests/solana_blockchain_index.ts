@@ -53,11 +53,8 @@ describe("SolanaBlockchainIndex", async () => {
 
   describe("updateIndexValue", async () => {
     it("Writes calculated index value and timestamp to account", async () => {
-      console.log(
-        `Requesting index calculation for existing account: ${indexValuePda} owned by user ${provider.wallet.publicKey}`
-      );
       // set off new index calculation
-      const tx = await program.methods
+      await program.methods
         .updateIndexValue()
         .accounts({
           indexValue: indexValuePda,
@@ -70,14 +67,9 @@ describe("SolanaBlockchainIndex", async () => {
           ltcAccount: "8RMnV1eD55iqUFJLMguPkYBkq8DCtx81XcmAja93LvRR",
         })
         .rpc();
-      console.log(`Calculation finished. Transaction signature: ${tx}`);
 
       // verify result
-      console.log(`Fetching account: ${indexValuePda}`);
       const indexValue = await program.account.indexValue.fetch(indexValuePda);
-      console.log(
-        `Account contents:\n\tprice: ${indexValue.price}\n\texpo: ${indexValue.expo}\n\tconf: ${indexValue.conf}\n\ttime: ${indexValue.time}`
-      );
       expect(indexValue.time).is.instanceOf(anchor.BN);
       expect(indexValue.price.toNumber()).to.equal(634453012372);
       expect(indexValue.conf.toNumber()).to.equal(204991922);
