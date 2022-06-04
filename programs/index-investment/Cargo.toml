@@ -1,11 +1,12 @@
 [package]
+description = "Invest into a crypto index using fungible tokens."
 edition = "2021"
-name = "solana-blockchain-index"
-version = "0.6.0"
+name = "index-investment"
+version = "0.1.0"
 
 [lib]
 crate-type = ["cdylib", "lib"]
-name = "solana_blockchain_index"
+name = "index_investment"
 
 [features]
 cpi = ["no-entrypoint"]
@@ -16,6 +17,3 @@ no-log-ix-name = []
 
 [dependencies]
 anchor-lang = "0.24.2"
-pyth-sdk-solana = "0.4.1"
-
-[dev-dependencies]

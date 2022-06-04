@@ -2,6 +2,7 @@
 seeds = false
 
 [programs.localnet]
+index_investment = "DS1BDHCUZ4exfnuyu4eG5bkiVaU7V6B7KnfrxV5WQ4ov"
 solana_blockchain_index = "56yNRQWKqpJdPSMDum7TCr7evVLt1uzXZkrarBZowyXz"
 
 [programs.devnet]
