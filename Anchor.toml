@@ -2,10 +2,10 @@
 seeds = false
 
 [programs.localnet]
-solana_blockchain_index = "7kARzULggbgDSLLpBgERNHQSpkse1qM3RB4NEEvS3ztu"
+solana_blockchain_index = "56yNRQWKqpJdPSMDum7TCr7evVLt1uzXZkrarBZowyXz"
 
 [programs.devnet]
-solana_blockchain_index = "7kARzULggbgDSLLpBgERNHQSpkse1qM3RB4NEEvS3ztu"
+solana_blockchain_index = "56yNRQWKqpJdPSMDum7TCr7evVLt1uzXZkrarBZowyXz"
 
 [registry]
 url = "https://anchor.projectserum.com"

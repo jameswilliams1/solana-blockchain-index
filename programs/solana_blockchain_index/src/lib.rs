@@ -2,7 +2,7 @@ use anchor_lang::prelude::*;
 mod index_service;
 mod pyth_service;
 
-declare_id!("7kARzULggbgDSLLpBgERNHQSpkse1qM3RB4NEEvS3ztu");
+declare_id!("56yNRQWKqpJdPSMDum7TCr7evVLt1uzXZkrarBZowyXz");
 
 const DISCRIMINATOR_LENGTH: usize = 8;
 const TIME_LENGTH: usize = 8;
