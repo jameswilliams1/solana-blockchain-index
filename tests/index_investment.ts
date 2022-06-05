@@ -33,7 +33,7 @@ describe("IndexInvestment", async () => {
     program.programId
   );
 
-  describe("initialiseAdminConfig", async () => {
+  describe("initialise", async () => {
     it("Cannot be initialised using an incorrect address", async () => {
       const incorrectAdminPda = anchor.web3.Keypair.generate();
       assert.rejects(
@@ -190,6 +190,12 @@ describe("IndexInvestment", async () => {
       );
       // tokens minted to user
       expect(userTokenBalance, "userTokenBalance").to.equal(BigInt(100)); // TODO hardcoded
+    });
+  });
+
+  describe("withdraw", async () => {
+    it("Burns user's tokens in exchange for SOL", async () => {
+      // TODO
     });
   });
 });

@@ -43,7 +43,7 @@ pub mod index_investment {
         Ok(())
     }
 
-    pub fn invest(ctx: Context<BuyIndexTokens>, lamports: u64) -> Result<()> {
+    pub fn invest(ctx: Context<Invest>, lamports: u64) -> Result<()> {
         // send SOL payment for tokens
         msg!(
             "Sending {} lamports from {} to {}",

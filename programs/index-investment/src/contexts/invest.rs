@@ -1,7 +1,7 @@
 use crate::*;
 
 #[derive(Accounts)]
-pub struct BuyIndexTokens<'info> {
+pub struct Invest<'info> {
     /// The person investing.
     #[account(mut)]
     pub user: Signer<'info>,
