@@ -29,14 +29,12 @@ pub struct Invest<'info> {
     #[account(seeds = [SEED_ADMIN_CONFIG], bump=admin_config.bump_admin_config)]
     pub admin_config: Account<'info, AdminConfig>,
 
-    // TODO try not mut
     /// Stores token metadata (supply etc.).
     #[account(mut, seeds = [SEED_MINT], bump = admin_config.bump_mint)]
     pub mint: Account<'info, Mint>,
 
-    // TODO try not mut
     /// Account used to mint or burn tokens.
-    #[account(mut, seeds = [SEED_TOKEN_VAULT], bump = admin_config.bump_token_vault)]
+    #[account(seeds = [SEED_TOKEN_VAULT], bump = admin_config.bump_token_vault)]
     pub token_vault: Box<Account<'info, TokenAccount>>,
 
     // required by anchor to mint/send tokens.
