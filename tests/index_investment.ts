@@ -12,11 +12,12 @@ describe("IndexInvestment", async () => {
   const program = anchor.workspace.IndexInvestment as Program<IndexInvestment>;
   const provider = program.provider as anchor.AnchorProvider;
   const systemProgram = anchor.web3.SystemProgram.programId;
-  // TODO use actual accounts
-  const indexAccount = anchor.web3.Keypair.generate().publicKey;
-  const solPriceAccount = anchor.web3.Keypair.generate().publicKey;
+  const indexAccount = new PublicKey(
+    "A6TEiAdXTR81YjwKQ23v4m8gZShXgbE9r2j4s5i5R9u4"
+  );
   const adminUser = provider.wallet.publicKey;
-  const solWallet = adminUser; // TODO should be PDA controlled
+  const solWallet = anchor.web3.Keypair.generate().publicKey; // TODO should be PDA controlled
+  const solPriceAccount = anchor.web3.Keypair.generate().publicKey; // TODO use actual account
 
   // find all PDAs
   const [adminConfigPda, _] = await PublicKey.findProgramAddress(
@@ -27,10 +28,13 @@ describe("IndexInvestment", async () => {
     [anchor.utils.bytes.utf8.encode("mint")],
     program.programId
   );
+  const [tokenVaultPda, ___] = await PublicKey.findProgramAddress(
+    [anchor.utils.bytes.utf8.encode("token_vault")],
+    program.programId
+  );
 
   describe("initialiseAdminConfig", async () => {
-    // TODO unskip
-    it.skip("Cannot be initialised using an incorrect address", async () => {
+    it("Cannot be initialised using an incorrect address", async () => {
       const incorrectAdminPda = anchor.web3.Keypair.generate();
       assert.rejects(
         program.methods
@@ -42,6 +46,7 @@ describe("IndexInvestment", async () => {
             solPriceAccount,
             adminConfig: incorrectAdminPda.publicKey,
             mint: mintPda,
+            tokenVault: tokenVaultPda,
             systemProgram,
             tokenProgram: anchor.utils.token.TOKEN_PROGRAM_ID,
             rent: anchor.web3.SYSVAR_RENT_PUBKEY,
@@ -60,6 +65,7 @@ describe("IndexInvestment", async () => {
           solPriceAccount,
           adminConfig: adminConfigPda,
           mint: mintPda,
+          tokenVault: tokenVaultPda,
           systemProgram,
           tokenProgram: spl.TOKEN_PROGRAM_ID,
           rent: anchor.web3.SYSVAR_RENT_PUBKEY,
@@ -71,11 +77,12 @@ describe("IndexInvestment", async () => {
       );
       expect(adminConfig.bumpAdminConfig).is.not.null;
       expect(adminConfig.bumpMint).is.not.null;
+      expect(adminConfig.bumpTokenVault).is.not.null;
       expect(adminConfig.adminUser.toBase58(), "adminUser").to.equal(
-        provider.wallet.publicKey.toBase58()
+        adminUser.toBase58()
       );
       expect(adminConfig.solWallet.toBase58(), "solWallet").to.equal(
-        provider.wallet.publicKey.toBase58()
+        solWallet.toBase58()
       );
 
       expect(adminConfig.indexAccount.toBase58(), "indexAccount").to.equal(
@@ -87,8 +94,7 @@ describe("IndexInvestment", async () => {
       ).to.equal(solPriceAccount.toBase58());
     });
 
-    // TODO unskip
-    it.skip("Cannot be re-initialised by a malicious user", async () => {
+    it("Cannot be re-initialised by a malicious user", async () => {
       const maliciousUser = anchor.web3.Keypair.generate();
       assert.rejects(
         program.methods
@@ -100,6 +106,7 @@ describe("IndexInvestment", async () => {
             solPriceAccount,
             adminConfig: adminConfigPda,
             mint: mintPda,
+            tokenVault: tokenVaultPda,
             systemProgram,
             tokenProgram: spl.TOKEN_PROGRAM_ID,
             rent: anchor.web3.SYSVAR_RENT_PUBKEY,
@@ -110,8 +117,8 @@ describe("IndexInvestment", async () => {
     });
   });
 
-  describe("buyIndexTokens", async () => {
-    it("Exchanges user's SOL for new index tokens", async () => {
+  describe("invest", async () => {
+    it("Exchanges user's SOL for newly minted index tokens", async () => {
       const lamports = new anchor.BN(anchor.web3.LAMPORTS_PER_SOL); // 1 SOL
       const user = anchor.web3.Keypair.generate();
       // fund user with some SOL
@@ -124,7 +131,7 @@ describe("IndexInvestment", async () => {
       );
 
       // token account should be created if it doesn't already exist
-      let userTokenWallet = await spl.getAssociatedTokenAddress(
+      let userTokenWalletAddress = await spl.getAssociatedTokenAddress(
         mintPda,
         user.publicKey,
         false,
@@ -142,15 +149,16 @@ describe("IndexInvestment", async () => {
       );
 
       await program.methods
-        .buyIndexTokens(lamports)
+        .invest(lamports)
         .accounts({
           user: user.publicKey,
-          userTokenWallet,
-          solWallet: provider.wallet.publicKey,
+          userTokenWallet: userTokenWalletAddress,
+          solWallet: solWallet,
           indexAccount,
           solPriceAccount,
           adminConfig: adminConfigPda,
           mint: mintPda,
+          tokenVault: tokenVaultPda,
           systemProgram,
           tokenProgram: spl.TOKEN_PROGRAM_ID,
           associatedTokenProgram: anchor.utils.token.ASSOCIATED_PROGRAM_ID,
@@ -160,18 +168,28 @@ describe("IndexInvestment", async () => {
         .rpc();
 
       const newSolWalletBalance = await provider.connection.getBalance(
-        adminUser
+        solWallet
       );
       const newUserBalance = await provider.connection.getBalance(
         user.publicKey
       );
+      const userTokenWallet = await spl.getAccount(
+        provider.connection,
+        userTokenWalletAddress,
+        "processed",
+        spl.TOKEN_PROGRAM_ID
+      );
+      const userTokenBalance = userTokenWallet.amount;
 
       // SOL transferred to program
-      expect(newSolWalletBalance.valueOf()).to.equal(
+      expect(newSolWalletBalance.valueOf(), "newSolWalletBalance").to.equal(
         solWalletBalance + lamports.toNumber()
       );
-      expect(newUserBalance.valueOf()).is.lessThan(userBalance.valueOf());
-      // TODO test token transfer
+      expect(newUserBalance.valueOf(), "newUserBalance").is.lessThan(
+        userBalance.valueOf()
+      );
+      // tokens minted to user
+      expect(userTokenBalance, "userTokenBalance").to.equal(BigInt(100)); // TODO hardcoded
     });
   });
 });

@@ -10,15 +10,19 @@ pub struct AdminConfig {
     // PDA bumps (makes it easier to find the PDA later)
     pub bump_admin_config: u8,
     pub bump_mint: u8,
+    pub bump_token_vault: u8,
 
-    pub admin_user: Pubkey, // Admin user's public key
+    /// Admin user's public key.
+    pub admin_user: Pubkey,
 
-    // settings
-    pub sol_wallet: Pubkey, // Address which receives SOL from users in exchange for tokens
-    pub index_account: Pubkey, // Address of the index value account (USD)
-    pub sol_price_account: Pubkey, // Address of the Pyth SOL/USD price account
+    /// Address which receives SOL from users in exchange for tokens.
+    pub sol_wallet: Pubkey,
+    /// Address of the current index value account (USD).
+    pub index_account: Pubkey,
+    /// Address of the Pyth SOL/USD price account.
+    pub sol_price_account: Pubkey,
 }
 
 impl AdminConfig {
-    pub const LEN: usize = DISCRIMINATOR_LENGTH + BUMP_LENGTH * 2 + PUBKEY_LENGTH * 4;
+    pub const LEN: usize = DISCRIMINATOR_LENGTH + BUMP_LENGTH * 3 + PUBKEY_LENGTH * 4;
 }

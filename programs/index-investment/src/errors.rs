@@ -2,12 +2,15 @@ use crate::*;
 
 #[error_code]
 pub enum ErrorCode {
-    #[msg("You are not authorised to perform this action.")]
+    #[msg("You are not authorised to perform this action")]
     Unauthorised,
 
-    #[msg("Account already initialised")]
-    Initialised,
+    #[msg("The wallet specified is incorrect")]
+    WrongWalletAddress,
 
-    #[msg("Account not yet initialised")]
-    Uninitialised,
+    #[msg("The index value account specified is incorrect")]
+    WrongIndexAccount,
+
+    #[msg("The Pyth SOL price account specified is incorrect")]
+    WrongSolPriceAccount,
 }
