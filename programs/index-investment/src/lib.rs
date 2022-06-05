@@ -60,7 +60,7 @@ pub mod index_investment {
             ],
         )?;
 
-        // mint tokens based on index value
+        // TODO mint tokens to user based on index value
 
         Ok(())
     }
