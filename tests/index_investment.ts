@@ -203,8 +203,8 @@ describe("IndexInvestment", async () => {
         solWalletBalance + lamports.toNumber()
       );
       expect(newUserBalance, "newUserBalance").is.lessThan(originalUserBalance);
-      // tokens minted to user
-      expect(userTokenBalance, "userTokenBalance").to.equal(BigInt(100)); // TODO hardcoded
+      // tokens minted to user based on index value
+      expect(userTokenBalance, "userTokenBalance").to.equal(BigInt(6889014));
     });
   });
 
@@ -237,8 +237,7 @@ describe("IndexInvestment", async () => {
       );
       const originalTokenSupply = originalMintData.supply;
 
-      // TODO related to amount in last test
-      const tokens = new anchor.BN(50); // number of tokens to withdraw
+      const tokens = new anchor.BN(1000000); // number of tokens to withdraw
 
       await program.methods
         .withdraw(tokens)
@@ -293,7 +292,7 @@ describe("IndexInvestment", async () => {
       );
 
       // payment sent to user's SOL wallet
-      const paymentAmount = 100; // TODO hardcoded
+      const paymentAmount = 145158644;
       expect(newUserBalance - originalUserBalance, "newUserBalance").to.equal(
         paymentAmount
       );

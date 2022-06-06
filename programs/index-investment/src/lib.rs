@@ -1,4 +1,5 @@
 use anchor_lang::prelude::*;
+use anchor_lang::solana_program::native_token::LAMPORTS_PER_SOL;
 use anchor_spl::{
     associated_token::AssociatedToken,
     token::{burn, mint_to, Burn, Mint, MintTo, Token, TokenAccount},
@@ -76,8 +77,14 @@ pub mod index_investment {
         )?;
 
         // mint new tokens to users wallet
-        // TODO mint tokens to user based on index value
-        let tokens = 100_u64;
+        let sol_usd = solana_blockchain_index::pyth_service::price_of_account(
+            &ctx.accounts.sol_price_account,
+        );
+        let index_value_usd = &ctx.accounts.index_account;
+        let tokens = ((lamports * LAMPORTS_PER_SOL) as f64
+            / index_value_in_lamports(index_value_usd, &sol_usd) as f64)
+            .round() as u64;
+
         let mint_instruction = MintTo {
             mint: ctx.accounts.mint.to_account_info(),
             to: ctx.accounts.user_token_wallet.to_account_info(),
@@ -90,6 +97,11 @@ pub mod index_investment {
             ctx.accounts.token_program.to_account_info(),
             mint_instruction,
             signer.as_slice(),
+        );
+        msg!(
+            "Minting {} tokens to {}",
+            tokens,
+            ctx.accounts.user_token_wallet.key()
         );
         mint_to(token_ctx, tokens)?;
 
@@ -115,8 +127,14 @@ pub mod index_investment {
         burn(token_ctx, tokens)?;
 
         // send SOL payment for user's tokens
-        // TODO payment based on index value
-        let lamports = 100_u64;
+        let sol_usd = solana_blockchain_index::pyth_service::price_of_account(
+            &ctx.accounts.sol_price_account,
+        );
+        let index_value_usd = &ctx.accounts.index_account;
+        let lamports = ((tokens * index_value_in_lamports(index_value_usd, &sol_usd)) as f64
+            / LAMPORTS_PER_SOL as f64)
+            .round() as u64;
+
         msg!(
             "Sending {} lamports from {} to {}",
             lamports,

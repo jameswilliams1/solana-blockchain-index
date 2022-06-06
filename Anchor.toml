@@ -45,5 +45,9 @@ filename = "tests/data/solana_blockchain_index/ltc_price_account.json"
 address = "A6TEiAdXTR81YjwKQ23v4m8gZShXgbE9r2j4s5i5R9u4"
 filename = "tests/data/index_investment/index_account.json"
 
+[[test.validator.account]]
+address = "H6ARHf6YXhGYeQfUzQNGk6rDNnLBQKrenN712K4AQJEG"
+filename = "tests/data/index_investment/sol_usd_price_account.json"
+
 [workspace]
 types = "app/src/idl/"

@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 mod index_service;
-mod pyth_service;
+pub mod pyth_service;
 pub mod utils;
 
 declare_id!("56yNRQWKqpJdPSMDum7TCr7evVLt1uzXZkrarBZowyXz");
