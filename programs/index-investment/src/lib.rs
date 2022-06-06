@@ -3,6 +3,7 @@ use anchor_spl::{
     associated_token::AssociatedToken,
     token::{burn, mint_to, Burn, Mint, MintTo, Token, TokenAccount},
 };
+use solana_blockchain_index::IndexValue;
 use std::str;
 mod errors;
 mod instructions;

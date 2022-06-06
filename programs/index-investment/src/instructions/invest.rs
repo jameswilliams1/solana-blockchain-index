@@ -16,9 +16,8 @@ pub struct Invest<'info> {
     pub user_token_wallet: Account<'info, TokenAccount>,
 
     /// Account to fetch current index value from.
-    /// CHECK validated by admin config
     #[account(constraint=index_account.key() == admin_config.index_account @ ErrorCode::WrongIndexAccount)]
-    pub index_account: AccountInfo<'info>,
+    pub index_account: Box<Account<'info, IndexValue>>,
 
     /// Account to fetch current SOL/USD rate from.
     /// CHECK validation done by pyth sdk

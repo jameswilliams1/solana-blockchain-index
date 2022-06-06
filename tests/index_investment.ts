@@ -41,11 +41,14 @@ describe("IndexInvestment", async () => {
   const user = anchor.web3.Keypair.generate(); // investor
 
   // data accounts
-  const indexAccount = new PublicKey( // see tests/data/index_account.json
+  // see tests/data/index_investment/index_account.json
+  const indexAccount = new PublicKey(
     "A6TEiAdXTR81YjwKQ23v4m8gZShXgbE9r2j4s5i5R9u4"
   );
-  // TODO use actual account
-  const solPriceAccount = anchor.web3.Keypair.generate().publicKey;
+  // see tests/data/index_investment/sol_usd_price_account.json
+  const solPriceAccount = new PublicKey(
+    "H6ARHf6YXhGYeQfUzQNGk6rDNnLBQKrenN712K4AQJEG"
+  );
 
   // program accounts/sysvars
   const systemProgram = anchor.web3.SystemProgram.programId;
