@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 use anchor_spl::{
     associated_token::AssociatedToken,
-    token::{mint_to, Mint, MintTo, Token, TokenAccount},
+    token::{burn, mint_to, Burn, Mint, MintTo, Token, TokenAccount},
 };
 use std::str;
 mod errors;
@@ -97,6 +97,16 @@ pub mod index_investment {
             tokens,
             ctx.accounts.user_token_wallet.key(),
         );
+        let burn_instruction = Burn {
+            mint: ctx.accounts.mint.to_account_info(),
+            from: ctx.accounts.user_token_wallet.to_account_info(),
+            authority: ctx.accounts.user.to_account_info(),
+        };
+        let token_ctx = CpiContext::new(
+            ctx.accounts.token_program.to_account_info(),
+            burn_instruction,
+        );
+        burn(token_ctx, tokens)?;
 
         Ok(())
     }

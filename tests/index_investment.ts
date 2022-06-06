@@ -17,6 +17,19 @@ async function getPda(
   return pda;
 }
 
+async function getAssociatedTokenWallet(
+  mint: PublicKey,
+  user: PublicKey
+): Promise<PublicKey> {
+  return await spl.getAssociatedTokenAddress(
+    mint,
+    user,
+    false,
+    spl.TOKEN_PROGRAM_ID,
+    anchor.utils.token.ASSOCIATED_PROGRAM_ID
+  );
+}
+
 describe("IndexInvestment", async () => {
   // configure the client to use the local cluster
   anchor.setProvider(anchor.AnchorProvider.env());
@@ -135,12 +148,9 @@ describe("IndexInvestment", async () => {
       );
 
       // token account should be created if it doesn't already exist
-      const userTokenWallet = await spl.getAssociatedTokenAddress(
+      const userTokenWallet = await getAssociatedTokenWallet(
         mint,
-        user.publicKey,
-        false,
-        spl.TOKEN_PROGRAM_ID,
-        anchor.utils.token.ASSOCIATED_PROGRAM_ID
+        user.publicKey
       );
 
       const solWalletBalance = await provider.connection.getBalance(
@@ -197,7 +207,78 @@ describe("IndexInvestment", async () => {
 
   describe("withdraw", async () => {
     it("Burns user's tokens in exchange for SOL", async () => {
-      // TODO
+      const userTokenWallet = await getAssociatedTokenWallet(
+        mint,
+        user.publicKey
+      );
+      const originalSolWalletBalance = await provider.connection.getBalance(
+        solWallet,
+        "processed"
+      );
+      const originalUserBalance = await provider.connection.getBalance(
+        user.publicKey,
+        "processed"
+      );
+      const originalUserTokenWalletData = await spl.getAccount(
+        provider.connection,
+        userTokenWallet,
+        "processed",
+        tokenProgram
+      );
+      const originalUserTokenBalance = originalUserTokenWalletData.amount;
+      const originalMintData = await spl.getMint(
+        provider.connection,
+        mint,
+        "processed",
+        tokenProgram
+      );
+      const originalTokenSupply = originalMintData.supply;
+
+      // TODO related to amount in last test
+      const tokens = new anchor.BN(50); // number of tokens to withdraw
+
+      await program.methods
+        .withdraw(tokens)
+        .accounts({
+          user: user.publicKey,
+          userTokenWallet,
+          solWallet,
+          indexAccount,
+          solPriceAccount,
+          adminConfig,
+          mint,
+          tokenVault,
+          systemProgram,
+          tokenProgram,
+          associatedTokenProgram,
+          rent,
+        })
+        .signers([user])
+        .rpc();
+
+      const newUserTokenWalletData = await spl.getAccount(
+        provider.connection,
+        userTokenWallet,
+        "processed",
+        tokenProgram
+      );
+      const newUserTokenBalance = newUserTokenWalletData.amount;
+      const newMintData = await spl.getMint(
+        provider.connection,
+        mint,
+        "processed",
+        tokenProgram
+      );
+      const newTokenSupply = newMintData.supply;
+
+      // tokens deducted from user and burned
+      expect(
+        originalUserTokenBalance - newUserTokenBalance,
+        "tokenBalance"
+      ).to.equal(BigInt(tokens.toNumber()));
+      expect(originalTokenSupply - newTokenSupply, "tokenSupply").to.equal(
+        BigInt(tokens.toNumber())
+      );
     });
   });
 });

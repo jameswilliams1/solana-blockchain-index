@@ -7,11 +7,7 @@ pub struct Withdraw<'info> {
     pub user: Signer<'info>,
 
     /// Associated token wallet.
-    #[account( // TODO
-        mut,
-        associated_token::mint = mint,
-        associated_token::authority = user,
-    )]
+    #[account(mut, associated_token::mint = mint, associated_token::authority = user)]
     pub user_token_wallet: Account<'info, TokenAccount>,
 
     /// Account to fetch current index value from.
