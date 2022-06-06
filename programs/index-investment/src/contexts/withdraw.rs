@@ -36,7 +36,7 @@ pub struct Withdraw<'info> {
     #[account(seeds = [SEED_TOKEN_VAULT], bump = admin_config.bump_token_vault)]
     pub token_vault: Box<Account<'info, TokenAccount>>,
 
-    // required by anchor to mint/send tokens.
+    // required by anchor to burn tokens/transfer SOL
     pub system_program: Program<'info, System>,
     pub token_program: Program<'info, Token>,
     pub associated_token_program: Program<'info, AssociatedToken>,

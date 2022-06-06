@@ -52,12 +52,10 @@ describe("IndexInvestment", async () => {
       const notTheAdminConfigPda = anchor.web3.Keypair.generate();
       assert.rejects(
         program.methods
-          .initialise()
+          .initialise(indexAccount, solPriceAccount)
           .accounts({
             user: adminUser,
             solWallet,
-            indexAccount,
-            solPriceAccount,
             adminConfig: notTheAdminConfigPda.publicKey,
             mint,
             tokenVault,
@@ -71,12 +69,10 @@ describe("IndexInvestment", async () => {
 
     it("Can be initialised once using the correct address", async () => {
       await program.methods
-        .initialise()
+        .initialise(indexAccount, solPriceAccount)
         .accounts({
           user: adminUser,
           solWallet,
-          indexAccount,
-          solPriceAccount,
           adminConfig,
           mint,
           tokenVault,
@@ -113,12 +109,10 @@ describe("IndexInvestment", async () => {
       const maliciousUser = anchor.web3.Keypair.generate();
       assert.rejects(
         program.methods
-          .initialise()
+          .initialise(indexAccount, solPriceAccount)
           .accounts({
             user: maliciousUser.publicKey,
             solWallet,
-            indexAccount,
-            solPriceAccount,
             adminConfig,
             mint,
             tokenVault,

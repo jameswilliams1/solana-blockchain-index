@@ -12,14 +12,6 @@ pub struct Initialise<'info> {
     #[account(mut)]
     pub user: Signer<'info>,
 
-    /// The current index value account.
-    /// CHECK we trust all accounts provided by the admin
-    pub index_account: AccountInfo<'info>,
-
-    /// The SOL/USD Pyth price account used for currency conversion.
-    /// CHECK we trust all accounts provided by the admin
-    pub sol_price_account: AccountInfo<'info>,
-
     /// Stores admin settings such as SOL payment address and data accounts used.
     #[account(
         init,
@@ -63,7 +55,7 @@ pub struct Initialise<'info> {
     )]
     pub sol_wallet: AccountInfo<'info>,
 
-    // required by anchor to initialise the token
+    // required by anchor to initialise accounts
     pub system_program: Program<'info, System>,
     pub token_program: Program<'info, Token>,
     rent: Sysvar<'info, Rent>,

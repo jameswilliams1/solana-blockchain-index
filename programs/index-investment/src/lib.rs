@@ -21,13 +21,17 @@ pub mod index_investment {
     /**
      * Create the program admin config and token mint authority PDAs.
      */
-    pub fn initialise(ctx: Context<Initialise>) -> Result<()> {
+    pub fn initialise(
+        ctx: Context<Initialise>,
+        index_account: Pubkey,
+        sol_price_account: Pubkey,
+    ) -> Result<()> {
         // setup admin account
         let admin_config = &mut ctx.accounts.admin_config;
         admin_config.admin_user = ctx.accounts.user.key();
         admin_config.sol_wallet = ctx.accounts.sol_wallet.key();
-        admin_config.index_account = ctx.accounts.index_account.key();
-        admin_config.sol_price_account = ctx.accounts.sol_price_account.key();
+        admin_config.index_account = index_account;
+        admin_config.sol_price_account = sol_price_account;
 
         // store bump for each PDA
         admin_config.bump_admin_config = *ctx
@@ -55,13 +59,13 @@ pub mod index_investment {
             ctx.accounts.user.key(),
             ctx.accounts.sol_wallet.key(),
         );
-        let ix = anchor_lang::solana_program::system_instruction::transfer(
+        let transfer_instruction = anchor_lang::solana_program::system_instruction::transfer(
             &ctx.accounts.user.key(),
             &ctx.accounts.sol_wallet.key(),
             lamports,
         );
         anchor_lang::solana_program::program::invoke(
-            &ix,
+            &transfer_instruction,
             &[
                 ctx.accounts.user.to_account_info(),
                 ctx.accounts.sol_wallet.to_account_info(),
