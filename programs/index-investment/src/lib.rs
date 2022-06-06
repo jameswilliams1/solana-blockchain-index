@@ -4,13 +4,13 @@ use anchor_spl::{
     token::{mint_to, Mint, MintTo, Token, TokenAccount},
 };
 use std::str;
-mod contexts;
 mod errors;
-mod structs;
+mod instructions;
+mod state;
 
-pub use contexts::*;
 pub use errors::ErrorCode;
-pub use structs::*;
+pub use instructions::*;
+pub use state::*;
 
 declare_id!("DS1BDHCUZ4exfnuyu4eG5bkiVaU7V6B7KnfrxV5WQ4ov");
 
