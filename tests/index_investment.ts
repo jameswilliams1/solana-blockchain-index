@@ -6,36 +6,50 @@ import { PublicKey } from "@solana/web3.js";
 import { IndexInvestment } from "../target/types/index_investment";
 import * as spl from "@solana/spl-token";
 
+async function getPda(
+  seed: string,
+  systemProgram: PublicKey
+): Promise<PublicKey> {
+  const [pda, _] = await PublicKey.findProgramAddress(
+    [anchor.utils.bytes.utf8.encode(seed)],
+    systemProgram
+  );
+  return pda;
+}
+
 describe("IndexInvestment", async () => {
   // configure the client to use the local cluster
   anchor.setProvider(anchor.AnchorProvider.env());
   const program = anchor.workspace.IndexInvestment as Program<IndexInvestment>;
   const provider = program.provider as anchor.AnchorProvider;
-  const systemProgram = anchor.web3.SystemProgram.programId;
-  const indexAccount = new PublicKey(
+
+  // user accounts
+  const adminUser = provider.wallet.publicKey;
+  const user = anchor.web3.Keypair.generate(); // investor
+
+  // data accounts
+  const indexAccount = new PublicKey( // see tests/data/index_account.json
     "A6TEiAdXTR81YjwKQ23v4m8gZShXgbE9r2j4s5i5R9u4"
   );
-  const adminUser = provider.wallet.publicKey;
-  const solWallet = anchor.web3.Keypair.generate().publicKey; // TODO should be PDA controlled
-  const solPriceAccount = anchor.web3.Keypair.generate().publicKey; // TODO use actual account
+  // TODO use actual account
+  const solPriceAccount = anchor.web3.Keypair.generate().publicKey;
 
-  // find all PDAs
-  const [adminConfigPda, _] = await PublicKey.findProgramAddress(
-    [anchor.utils.bytes.utf8.encode("admin_config")],
-    program.programId
-  );
-  const [mintPda, __] = await PublicKey.findProgramAddress(
-    [anchor.utils.bytes.utf8.encode("mint")],
-    program.programId
-  );
-  const [tokenVaultPda, ___] = await PublicKey.findProgramAddress(
-    [anchor.utils.bytes.utf8.encode("token_vault")],
-    program.programId
+  // program accounts/sysvars
+  const systemProgram = anchor.web3.SystemProgram.programId;
+  const tokenProgram = spl.TOKEN_PROGRAM_ID;
+  const rent = anchor.web3.SYSVAR_RENT_PUBKEY;
+  const associatedTokenProgram = spl.ASSOCIATED_TOKEN_PROGRAM_ID;
+
+  // PDAs
+  let [adminConfig, mint, tokenVault, solWallet] = await Promise.all(
+    ["admin_config", "mint", "token_vault", "sol_wallet"].map((seed) =>
+      getPda(seed, program.programId)
+    )
   );
 
   describe("initialise", async () => {
     it("Cannot be initialised using an incorrect address", async () => {
-      const incorrectAdminPda = anchor.web3.Keypair.generate();
+      const notTheAdminConfigPda = anchor.web3.Keypair.generate();
       assert.rejects(
         program.methods
           .initialise()
@@ -44,12 +58,12 @@ describe("IndexInvestment", async () => {
             solWallet,
             indexAccount,
             solPriceAccount,
-            adminConfig: incorrectAdminPda.publicKey,
-            mint: mintPda,
-            tokenVault: tokenVaultPda,
+            adminConfig: notTheAdminConfigPda.publicKey,
+            mint,
+            tokenVault,
             systemProgram,
-            tokenProgram: anchor.utils.token.TOKEN_PROGRAM_ID,
-            rent: anchor.web3.SYSVAR_RENT_PUBKEY,
+            tokenProgram,
+            rent,
           })
           .rpc()
       );
@@ -63,33 +77,34 @@ describe("IndexInvestment", async () => {
           solWallet,
           indexAccount,
           solPriceAccount,
-          adminConfig: adminConfigPda,
-          mint: mintPda,
-          tokenVault: tokenVaultPda,
+          adminConfig,
+          mint,
+          tokenVault,
           systemProgram,
-          tokenProgram: spl.TOKEN_PROGRAM_ID,
-          rent: anchor.web3.SYSVAR_RENT_PUBKEY,
+          tokenProgram,
+          rent,
         })
         .rpc();
 
-      const adminConfig = await program.account.adminConfig.fetch(
-        adminConfigPda
+      const adminConfigData = await program.account.adminConfig.fetch(
+        adminConfig
       );
-      expect(adminConfig.bumpAdminConfig).is.not.null;
-      expect(adminConfig.bumpMint).is.not.null;
-      expect(adminConfig.bumpTokenVault).is.not.null;
-      expect(adminConfig.adminUser.toBase58(), "adminUser").to.equal(
+      expect(adminConfigData.bumpAdminConfig).is.greaterThan(0);
+      expect(adminConfigData.bumpMint).is.greaterThan(0);
+      expect(adminConfigData.bumpTokenVault).is.greaterThan(0);
+      expect(adminConfigData.bumpSolWallet).is.greaterThan(0);
+      expect(adminConfigData.adminUser.toBase58(), "adminUser").to.equal(
         adminUser.toBase58()
       );
-      expect(adminConfig.solWallet.toBase58(), "solWallet").to.equal(
+      expect(adminConfigData.solWallet.toBase58(), "solWallet").to.equal(
         solWallet.toBase58()
       );
 
-      expect(adminConfig.indexAccount.toBase58(), "indexAccount").to.equal(
+      expect(adminConfigData.indexAccount.toBase58(), "indexAccount").to.equal(
         indexAccount.toBase58()
       );
       expect(
-        adminConfig.solPriceAccount.toBase58(),
+        adminConfigData.solPriceAccount.toBase58(),
         "solPriceAccount"
       ).to.equal(solPriceAccount.toBase58());
     });
@@ -101,15 +116,15 @@ describe("IndexInvestment", async () => {
           .initialise()
           .accounts({
             user: maliciousUser.publicKey,
-            solWallet: maliciousUser.publicKey,
+            solWallet,
             indexAccount,
             solPriceAccount,
-            adminConfig: adminConfigPda,
-            mint: mintPda,
-            tokenVault: tokenVaultPda,
+            adminConfig,
+            mint,
+            tokenVault,
             systemProgram,
-            tokenProgram: spl.TOKEN_PROGRAM_ID,
-            rent: anchor.web3.SYSVAR_RENT_PUBKEY,
+            tokenProgram,
+            rent,
           })
           .signers([maliciousUser])
           .rpc()
@@ -120,7 +135,6 @@ describe("IndexInvestment", async () => {
   describe("invest", async () => {
     it("Exchanges user's SOL for newly minted index tokens", async () => {
       const lamports = new anchor.BN(anchor.web3.LAMPORTS_PER_SOL); // 1 SOL
-      const user = anchor.web3.Keypair.generate();
       // fund user with some SOL
       await provider.connection.confirmTransaction(
         await provider.connection.requestAirdrop(
@@ -131,8 +145,8 @@ describe("IndexInvestment", async () => {
       );
 
       // token account should be created if it doesn't already exist
-      let userTokenWalletAddress = await spl.getAssociatedTokenAddress(
-        mintPda,
+      const userTokenWallet = await spl.getAssociatedTokenAddress(
+        mint,
         user.publicKey,
         false,
         spl.TOKEN_PROGRAM_ID,
@@ -143,7 +157,7 @@ describe("IndexInvestment", async () => {
         solWallet,
         "confirmed"
       );
-      const userBalance = await provider.connection.getBalance(
+      const originalUserBalance = await provider.connection.getBalance(
         user.publicKey,
         "confirmed"
       );
@@ -152,17 +166,17 @@ describe("IndexInvestment", async () => {
         .invest(lamports)
         .accounts({
           user: user.publicKey,
-          userTokenWallet: userTokenWalletAddress,
-          solWallet: solWallet,
+          userTokenWallet,
+          solWallet,
           indexAccount,
           solPriceAccount,
-          adminConfig: adminConfigPda,
-          mint: mintPda,
-          tokenVault: tokenVaultPda,
+          adminConfig,
+          mint,
+          tokenVault,
           systemProgram,
-          tokenProgram: spl.TOKEN_PROGRAM_ID,
-          associatedTokenProgram: anchor.utils.token.ASSOCIATED_PROGRAM_ID,
-          rent: anchor.web3.SYSVAR_RENT_PUBKEY,
+          tokenProgram,
+          associatedTokenProgram,
+          rent,
         })
         .signers([user])
         .rpc();
@@ -173,21 +187,19 @@ describe("IndexInvestment", async () => {
       const newUserBalance = await provider.connection.getBalance(
         user.publicKey
       );
-      const userTokenWallet = await spl.getAccount(
+      const userTokenWalletData = await spl.getAccount(
         provider.connection,
-        userTokenWalletAddress,
+        userTokenWallet,
         "processed",
-        spl.TOKEN_PROGRAM_ID
+        tokenProgram
       );
-      const userTokenBalance = userTokenWallet.amount;
+      const userTokenBalance = userTokenWalletData.amount;
 
       // SOL transferred to program
       expect(newSolWalletBalance.valueOf(), "newSolWalletBalance").to.equal(
         solWalletBalance + lamports.toNumber()
       );
-      expect(newUserBalance.valueOf(), "newUserBalance").is.lessThan(
-        userBalance.valueOf()
-      );
+      expect(newUserBalance, "newUserBalance").is.lessThan(originalUserBalance);
       // tokens minted to user
       expect(userTokenBalance, "userTokenBalance").to.equal(BigInt(100)); // TODO hardcoded
     });

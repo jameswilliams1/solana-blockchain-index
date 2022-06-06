@@ -3,6 +3,7 @@ use crate::*;
 pub static SEED_ADMIN_CONFIG: &[u8; 12] = b"admin_config";
 pub static SEED_MINT: &[u8; 4] = b"mint";
 pub static SEED_TOKEN_VAULT: &[u8; 11] = b"token_vault";
+pub static SEED_SOL_WALLET: &[u8; 10] = b"sol_wallet";
 
 #[derive(Accounts)]
 pub struct Initialise<'info> {
@@ -11,14 +12,15 @@ pub struct Initialise<'info> {
     #[account(mut)]
     pub user: Signer<'info>,
 
-    /// CHECK no data is read from this account
-    pub sol_wallet: AccountInfo<'info>,
-    /// CHECK no data is read from this account
+    /// The current index value account.
+    /// CHECK we trust all accounts provided by the admin
     pub index_account: AccountInfo<'info>,
-    /// CHECK no data is read from this account
+
+    /// The SOL/USD Pyth price account used for currency conversion.
+    /// CHECK we trust all accounts provided by the admin
     pub sol_price_account: AccountInfo<'info>,
 
-    /// Stores admin settings such as SOL payment address and index accounts used.
+    /// Stores admin settings such as SOL payment address and data accounts used.
     #[account(
         init,
         payer = user,
@@ -49,6 +51,17 @@ pub struct Initialise<'info> {
         token::authority = token_vault,
     )]
     pub token_vault: Box<Account<'info, TokenAccount>>,
+
+    /// Wallet used to store invested SOL.
+    /// CHECK no data is read from this account
+    #[account(
+        init,
+        payer = user, // NB no fee is actually charged here, wallets are free
+        seeds = [SEED_SOL_WALLET],
+        bump,
+        space = 0, // wallets do not store data
+    )]
+    pub sol_wallet: AccountInfo<'info>,
 
     // required by anchor to initialise the token
     pub system_program: Program<'info, System>,

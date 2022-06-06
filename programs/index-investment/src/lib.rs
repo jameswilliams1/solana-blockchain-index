@@ -39,6 +39,10 @@ pub mod index_investment {
             .bumps
             .get(str::from_utf8(SEED_TOKEN_VAULT).unwrap())
             .unwrap();
+        admin_config.bump_sol_wallet = *ctx
+            .bumps
+            .get(str::from_utf8(SEED_SOL_WALLET).unwrap())
+            .unwrap();
 
         Ok(())
     }
@@ -49,7 +53,7 @@ pub mod index_investment {
             "Sending {} lamports from {} to {}",
             lamports,
             ctx.accounts.user.key(),
-            ctx.accounts.sol_wallet.key()
+            ctx.accounts.sol_wallet.key(),
         );
         let ix = anchor_lang::solana_program::system_instruction::transfer(
             &ctx.accounts.user.key(),
@@ -79,6 +83,17 @@ pub mod index_investment {
             signer.as_slice(),
         );
         mint_to(token_ctx, 100)?; // TODO mint tokens to user based on index value
+
+        Ok(())
+    }
+
+    pub fn withdraw(ctx: Context<Invest>, tokens: u64) -> Result<()> {
+        // burn tokens from user token wallet
+        msg!(
+            "Burning {} tokens from token wallet {}",
+            tokens,
+            ctx.accounts.user_token_wallet.key(),
+        );
 
         Ok(())
     }

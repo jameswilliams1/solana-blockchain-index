@@ -11,6 +11,7 @@ pub struct AdminConfig {
     pub bump_admin_config: u8,
     pub bump_mint: u8,
     pub bump_token_vault: u8,
+    pub bump_sol_wallet: u8,
 
     /// Admin user's public key.
     pub admin_user: Pubkey,
@@ -24,5 +25,5 @@ pub struct AdminConfig {
 }
 
 impl AdminConfig {
-    pub const LEN: usize = DISCRIMINATOR_LENGTH + BUMP_LENGTH * 3 + PUBKEY_LENGTH * 4;
+    pub const LEN: usize = DISCRIMINATOR_LENGTH + BUMP_LENGTH * 4 + PUBKEY_LENGTH * 4;
 }
