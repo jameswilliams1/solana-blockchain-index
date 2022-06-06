@@ -16,14 +16,13 @@ pub struct AdminConfig {
     /// Admin user's public key.
     pub admin_user: Pubkey,
 
-    /// Address which receives SOL from users in exchange for tokens.
-    pub sol_wallet: Pubkey,
     /// Address of the current index value account (USD).
     pub index_account: Pubkey,
+
     /// Address of the Pyth SOL/USD price account.
     pub sol_price_account: Pubkey,
 }
 
 impl AdminConfig {
-    pub const LEN: usize = DISCRIMINATOR_LENGTH + BUMP_LENGTH * 4 + PUBKEY_LENGTH * 4;
+    pub const LEN: usize = DISCRIMINATOR_LENGTH + BUMP_LENGTH * 4 + PUBKEY_LENGTH * 3;
 }

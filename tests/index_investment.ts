@@ -92,10 +92,6 @@ describe("IndexInvestment", async () => {
       expect(adminConfigData.adminUser.toBase58(), "adminUser").to.equal(
         adminUser.toBase58()
       );
-      expect(adminConfigData.solWallet.toBase58(), "solWallet").to.equal(
-        solWallet.toBase58()
-      );
-
       expect(adminConfigData.indexAccount.toBase58(), "indexAccount").to.equal(
         indexAccount.toBase58()
       );

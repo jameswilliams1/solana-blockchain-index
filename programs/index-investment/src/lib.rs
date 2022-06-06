@@ -29,7 +29,6 @@ pub mod index_investment {
         // setup admin account
         let admin_config = &mut ctx.accounts.admin_config;
         admin_config.admin_user = ctx.accounts.user.key();
-        admin_config.sol_wallet = ctx.accounts.sol_wallet.key();
         admin_config.index_account = index_account;
         admin_config.sol_price_account = sol_price_account;
 
