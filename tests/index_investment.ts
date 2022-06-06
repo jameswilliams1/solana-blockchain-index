@@ -270,15 +270,34 @@ describe("IndexInvestment", async () => {
         tokenProgram
       );
       const newTokenSupply = newMintData.supply;
+      const newSolWalletBalance = await provider.connection.getBalance(
+        solWallet,
+        "processed"
+      );
+      const newUserBalance = await provider.connection.getBalance(
+        user.publicKey,
+        "processed"
+      );
 
       // tokens deducted from user and burned
+      const tokensBurned = BigInt(tokens.toNumber());
       expect(
         originalUserTokenBalance - newUserTokenBalance,
         "tokenBalance"
-      ).to.equal(BigInt(tokens.toNumber()));
+      ).to.equal(tokensBurned);
       expect(originalTokenSupply - newTokenSupply, "tokenSupply").to.equal(
-        BigInt(tokens.toNumber())
+        tokensBurned
       );
+
+      // payment sent to user's SOL wallet
+      const paymentAmount = 100; // TODO hardcoded
+      expect(newUserBalance - originalUserBalance, "newUserBalance").to.equal(
+        paymentAmount
+      );
+      expect(
+        originalSolWalletBalance - newSolWalletBalance,
+        "newSolWalletBalance"
+      ).to.equal(paymentAmount);
     });
   });
 });

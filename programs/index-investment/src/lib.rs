@@ -72,6 +72,8 @@ pub mod index_investment {
         )?;
 
         // mint new tokens to users wallet
+        // TODO mint tokens to user based on index value
+        let tokens = 100_u64;
         let mint_instruction = MintTo {
             mint: ctx.accounts.mint.to_account_info(),
             to: ctx.accounts.user_token_wallet.to_account_info(),
@@ -85,7 +87,7 @@ pub mod index_investment {
             mint_instruction,
             signer.as_slice(),
         );
-        mint_to(token_ctx, 100)?; // TODO mint tokens to user based on index value
+        mint_to(token_ctx, tokens)?;
 
         Ok(())
     }
@@ -107,6 +109,18 @@ pub mod index_investment {
             burn_instruction,
         );
         burn(token_ctx, tokens)?;
+
+        // send SOL payment for user's tokens
+        // TODO payment based on index value
+        let lamports = 100_u64;
+        msg!(
+            "Sending {} lamports from {} to {}",
+            lamports,
+            ctx.accounts.sol_wallet.key(),
+            ctx.accounts.user.key(),
+        );
+        **ctx.accounts.sol_wallet.try_borrow_mut_lamports()? -= lamports;
+        **ctx.accounts.user.try_borrow_mut_lamports()? += lamports;
 
         Ok(())
     }
