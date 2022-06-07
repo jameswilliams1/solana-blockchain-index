@@ -87,8 +87,9 @@ pub mod index_investment {
             &ctx.accounts.sol_price_account,
         );
         let index_value_usd = &ctx.accounts.index_account;
-        let tokens = ((invested_lamports * LAMPORTS_PER_SOL) as f64
+        let tokens = ((invested_lamports as f64
             / index_value_in_lamports(index_value_usd, &sol_usd) as f64)
+            * LAMPORTS_PER_SOL as f64)
             .round() as u64;
 
         let mint_instruction = MintTo {
@@ -137,8 +138,8 @@ pub mod index_investment {
             &ctx.accounts.sol_price_account,
         );
         let index_value_usd = &ctx.accounts.index_account;
-        let lamports = ((tokens * index_value_in_lamports(index_value_usd, &sol_usd)) as f64
-            / LAMPORTS_PER_SOL as f64)
+        let lamports = ((tokens as f64 / LAMPORTS_PER_SOL as f64)
+            * index_value_in_lamports(index_value_usd, &sol_usd) as f64)
             .round() as u64;
         let transaction_fee = (TRANSACTION_FEE * lamports as f64).round() as u64;
         let withdrawed_lamports = lamports - transaction_fee;
