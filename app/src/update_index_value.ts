@@ -30,7 +30,7 @@ const urlToAccounts = {
   },
 };
 
-const main = async () => {
+async function main() {
   const clusterUrl = process.env.CLUSTER_URL;
   anchor.setProvider(anchor.AnchorProvider.local(clusterUrl));
   const priceAccounts = urlToAccounts[clusterUrl];
@@ -85,7 +85,7 @@ const main = async () => {
   );
   console.log("SUCCESS\n");
   process.exit(0);
-};
+}
 
 main().catch((err) => {
   console.error(err);
