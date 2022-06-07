@@ -17,6 +17,8 @@ pub use instructions::*;
 pub use services::*;
 pub use state::*;
 
+static TRANSACTION_FEE: f64 = 0.02;
+
 declare_id!("DS1BDHCUZ4exfnuyu4eG5bkiVaU7V6B7KnfrxV5WQ4ov");
 
 #[program]
@@ -77,11 +79,15 @@ pub mod index_investment {
         )?;
 
         // mint new tokens to users wallet
+        let transaction_fee = (TRANSACTION_FEE * lamports as f64).round() as u64;
+        let invested_lamports = lamports - transaction_fee;
+        msg!("Invested amount after fees is {}", invested_lamports);
+
         let sol_usd = solana_blockchain_index::pyth_service::price_of_account(
             &ctx.accounts.sol_price_account,
         );
         let index_value_usd = &ctx.accounts.index_account;
-        let tokens = ((lamports * LAMPORTS_PER_SOL) as f64
+        let tokens = ((invested_lamports * LAMPORTS_PER_SOL) as f64
             / index_value_in_lamports(index_value_usd, &sol_usd) as f64)
             .round() as u64;
 
@@ -134,15 +140,18 @@ pub mod index_investment {
         let lamports = ((tokens * index_value_in_lamports(index_value_usd, &sol_usd)) as f64
             / LAMPORTS_PER_SOL as f64)
             .round() as u64;
+        let transaction_fee = (TRANSACTION_FEE * lamports as f64).round() as u64;
+        let withdrawed_lamports = lamports - transaction_fee;
+        msg!("Withdrawal amount after fees is {}", withdrawed_lamports);
 
         msg!(
             "Sending {} lamports from {} to {}",
-            lamports,
+            withdrawed_lamports,
             ctx.accounts.sol_wallet.key(),
             ctx.accounts.user.key(),
         );
-        **ctx.accounts.sol_wallet.try_borrow_mut_lamports()? -= lamports;
-        **ctx.accounts.user.try_borrow_mut_lamports()? += lamports;
+        **ctx.accounts.sol_wallet.try_borrow_mut_lamports()? -= withdrawed_lamports;
+        **ctx.accounts.user.try_borrow_mut_lamports()? += withdrawed_lamports;
 
         Ok(())
     }

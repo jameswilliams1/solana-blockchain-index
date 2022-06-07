@@ -45,7 +45,6 @@ describe("IndexInvestment", async () => {
   const indexAccount = new PublicKey(
     "A6TEiAdXTR81YjwKQ23v4m8gZShXgbE9r2j4s5i5R9u4"
   );
-  const indexValueInLamports = 145158644199;
   // see tests/data/index_investment/sol_usd_price_account.json
   const solPriceAccount = new PublicKey(
     "H6ARHf6YXhGYeQfUzQNGk6rDNnLBQKrenN712K4AQJEG"
@@ -63,6 +62,10 @@ describe("IndexInvestment", async () => {
       getPda(seed, program.programId)
     )
   );
+
+  // test data constants
+  const indexValueInLamports = 145158644199;
+  const transactionFeeMultiplier = 0.98;
 
   describe("initialise", async () => {
     it("Cannot be initialised using an incorrect address", async () => {
@@ -205,14 +208,13 @@ describe("IndexInvestment", async () => {
       );
       expect(newUserBalance, "newUserBalance").is.lessThan(originalUserBalance);
       // tokens minted to user based on index value
-      expect(userTokenBalance, "userTokenBalance").to.equal(
-        BigInt(
-          Math.round(
-            (anchor.web3.LAMPORTS_PER_SOL * lamports.toNumber()) /
-              indexValueInLamports
-          )
-        )
+      const tokens = Math.round(
+        (anchor.web3.LAMPORTS_PER_SOL *
+          lamports.toNumber() *
+          transactionFeeMultiplier) /
+          indexValueInLamports
       );
+      expect(userTokenBalance, "userTokenBalance").to.equal(BigInt(tokens));
     });
   });
 
@@ -301,7 +303,7 @@ describe("IndexInvestment", async () => {
 
       // payment sent to user's SOL wallet
       const paymentAmount = Math.round(
-        (indexValueInLamports * tokens.toNumber()) /
+        (indexValueInLamports * tokens.toNumber() * transactionFeeMultiplier) /
           anchor.web3.LAMPORTS_PER_SOL
       );
 
