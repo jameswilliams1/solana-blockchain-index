@@ -45,6 +45,7 @@ describe("IndexInvestment", async () => {
   const indexAccount = new PublicKey(
     "A6TEiAdXTR81YjwKQ23v4m8gZShXgbE9r2j4s5i5R9u4"
   );
+  const indexValueInLamports = 145158644199;
   // see tests/data/index_investment/sol_usd_price_account.json
   const solPriceAccount = new PublicKey(
     "H6ARHf6YXhGYeQfUzQNGk6rDNnLBQKrenN712K4AQJEG"
@@ -204,7 +205,14 @@ describe("IndexInvestment", async () => {
       );
       expect(newUserBalance, "newUserBalance").is.lessThan(originalUserBalance);
       // tokens minted to user based on index value
-      expect(userTokenBalance, "userTokenBalance").to.equal(BigInt(6889014));
+      expect(userTokenBalance, "userTokenBalance").to.equal(
+        BigInt(
+          Math.round(
+            (anchor.web3.LAMPORTS_PER_SOL * lamports.toNumber()) /
+              indexValueInLamports
+          )
+        )
+      );
     });
   });
 
@@ -292,7 +300,11 @@ describe("IndexInvestment", async () => {
       );
 
       // payment sent to user's SOL wallet
-      const paymentAmount = 145158644;
+      const paymentAmount = Math.round(
+        (indexValueInLamports * tokens.toNumber()) /
+          anchor.web3.LAMPORTS_PER_SOL
+      );
+
       expect(newUserBalance - originalUserBalance, "newUserBalance").to.equal(
         paymentAmount
       );
