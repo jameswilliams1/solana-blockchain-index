@@ -18,3 +18,5 @@ test-ledger
 # auto generated IDL
 app/src/idl/
 build/
+
+.env
