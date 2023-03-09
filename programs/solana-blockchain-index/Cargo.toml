@@ -1,4 +1,5 @@
 [package]
+description = "Track the performance of top cryptocurrencies using Pyth."
 edition = "2021"
 name = "solana-blockchain-index"
 version = "0.6.0"
@@ -17,5 +18,3 @@ no-log-ix-name = []
 [dependencies]
 anchor-lang = "0.24.2"
 pyth-sdk-solana = "0.4.1"
-
-[dev-dependencies]

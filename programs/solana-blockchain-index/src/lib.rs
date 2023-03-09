@@ -1,6 +1,7 @@
 use anchor_lang::prelude::*;
 mod index_service;
-mod pyth_service;
+pub mod pyth_service;
+pub mod utils;
 
 declare_id!("56yNRQWKqpJdPSMDum7TCr7evVLt1uzXZkrarBZowyXz");
 
@@ -59,7 +60,7 @@ pub mod solana_blockchain_index {
             .iter()
             .map(|pa| pyth_service::price_of_account(pa))
             .collect();
-        let index_calculation = index_service::calculate_index_value(prices);
+        let index_calculation = index_service::calculate_index_value(&prices);
 
         index_value.price = index_calculation.price;
         index_value.expo = index_calculation.expo;

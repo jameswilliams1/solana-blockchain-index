@@ -1,5 +1,26 @@
 # Solana Blockchain Index
-A proof-of-concept crypto index running on the [Solana blockchain](https://solana.com/) using [the Pyth Network](https://pyth.network/) for market data.
+A proof-of-concept crypto index and investment contract running on the [Solana blockchain](https://solana.com/) using [the Pyth Network](https://pyth.network/) for market data.
+
+# Overview
+## index-investment program
+Allows a user to invest in an index through buying and selling fungible tokens.
+### initialise
+- Stores admin settings in a PDA (price accounts used for exchange rates etc.)
+- First user to call function becomes the admin, no other users can call this function afterwards
+
+### invest
+- Transfers specified number of lamports from user (investor) to the programs wallet
+- Index tokens are minted to the users associated token wallet rounded to the nearest integer
+
+$$tokensReceived=\frac{lamportsPerSol \times lamportsInvested}{indexValueInLamports}$$
+
+### withdraw
+- Burns specified number of index tokens from user's associated token wallet
+- Transfers lamports back to user
+$$lamportsWithdrawn=\frac{tokensBurned \times indexValueInLamports}{lamportsPerSol}$$
+
+## solana-blockchain-index program
+- Uses the provided Pyth network public keys to read data from price accounts, writing to a PDA owned by the requesting user. The same PDA is used to update the value for each re-run.
 
 # Developer Setup
 ## First Time Setup

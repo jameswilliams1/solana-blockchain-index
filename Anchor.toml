@@ -2,6 +2,7 @@
 seeds = false
 
 [programs.localnet]
+index_investment = "DS1BDHCUZ4exfnuyu4eG5bkiVaU7V6B7KnfrxV5WQ4ov"
 solana_blockchain_index = "56yNRQWKqpJdPSMDum7TCr7evVLt1uzXZkrarBZowyXz"
 
 [programs.devnet]
@@ -22,23 +23,31 @@ url = "mainnet-beta" # url of the cluster that accounts are cloned from
 
 [[test.validator.account]]
 address = "4CkQJBxhU8EZ2UjhigbtdaPbpTe6mqf811fipYBFbSYN"
-filename = "tests/data/bnb_price_account.json"
+filename = "tests/data/solana_blockchain_index/bnb_price_account.json"
 
 [[test.validator.account]]
 address = "GVXRSBjFk6e6J3NbVPXohDJetcTjaeeuykUpbQF8UoMU"
-filename = "tests/data/btc_price_account.json"
+filename = "tests/data/solana_blockchain_index/btc_price_account.json"
 
 [[test.validator.account]]
 address = "JBu1AL4obBcCMqKBBxhpWCNUt136ijcuMZLFvTP7iWdB"
-filename = "tests/data/eth_price_account.json"
+filename = "tests/data/solana_blockchain_index/eth_price_account.json"
 
 [[test.validator.account]]
 address = "FsSM3s38PX9K7Dn6eGzuE29S2Dsk1Sss1baytTQdCaQj"
-filename = "tests/data/doge_price_account.json"
+filename = "tests/data/solana_blockchain_index/doge_price_account.json"
 
 [[test.validator.account]]
 address = "8RMnV1eD55iqUFJLMguPkYBkq8DCtx81XcmAja93LvRR"
-filename = "tests/data/ltc_price_account.json"
+filename = "tests/data/solana_blockchain_index/ltc_price_account.json"
+
+[[test.validator.account]]
+address = "A6TEiAdXTR81YjwKQ23v4m8gZShXgbE9r2j4s5i5R9u4"
+filename = "tests/data/index_investment/index_account.json"
+
+[[test.validator.account]]
+address = "H6ARHf6YXhGYeQfUzQNGk6rDNnLBQKrenN712K4AQJEG"
+filename = "tests/data/index_investment/sol_usd_price_account.json"
 
 [workspace]
 types = "app/src/idl/"
