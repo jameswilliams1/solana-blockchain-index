@@ -20,7 +20,7 @@ pub fn normalise_prices(prices: &Vec<Price>) -> (Vec<Price>, i32) {
 
         new_prices.push(Price {
             price: new_price,
-            expo: expo,
+            expo,
             conf: new_conf,
         });
     }
