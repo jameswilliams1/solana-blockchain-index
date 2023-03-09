@@ -68,7 +68,7 @@ jobs:
         run: npm i -g @project-serum/anchor-cli
 
       - name: Generate new keypair
-        run: solana-keygen new
+        run: solana-keygen new --no-bip39-passphrase
 
       - name: Set solana target cluster to local
         run: solana config set --url http:localhost:8899
